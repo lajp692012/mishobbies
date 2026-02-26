@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <%- include('partials/head') %>
+</head>
+<body>
+    <%- include('partials/navigation') %>
+ 
+    <header  class="container">
+        <div class="d-flex justify-content-center align-items-center wh-50">
+            <img src="/images/mis.png" alt="Mis" class="rounded float-start w-25">
+            <img src="/images/hobbies.png" alt="Nobbies" class="rounded float-end w-25" >
+        </div>
+    </header>
+
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="card bg-dark text-white text-center">
+            <div class="card-header">
+                <h3>Contáctame</h3>
+            </div>
+            <div class="card-body text-start">
+                <form id="dataForm">
+                    <div class="row">
+                        <div class="col">
+                            <label for="nane">Nombre</label>
+                            <input type="text" placeholder="Nombre" class="form-control" id="nombre">
+                        </div>
+                        <div class="col">
+                            <label for="lastname">Apellido</label>
+                            <input type="text" placeholder="Apellido" class="form-control" id="apellido">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" placeholder="Correo Electrónico" class="form-control" id="email">
+                    </div>                                                
+                    <div class="mb-3">
+                        <label for="message">Mensaje:</label>
+                        <textarea name="message" rows="3" class="form-control" placeholder="Escribe el mensaje" id="mensaje"></textarea>
+                    </div>
+
+                    <button class="btn btn-primary btn-block" type="submit">
+                        Registrar
+                    </button>
+                </form>
+                <h3>Datos almacenados</h3>
+                <ul id="dataList"></ul>
+                <script>
+                    const form = document.getElementById('dataForm');
+                    const dataList = document.getElementById('dataList');
+
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const nombre = document.getElementById('nombre').value;
+                        const apellido = document.getElementById('apellido').value;
+                        const email = document.getElementById('email').value;
+                        const mensaje = document.getElementById('mensaje').value;
+
+                        await fetch('/registrar', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ nombre, apellido, email, mensaje})
+                        });
+
+                        loadData();
+                    });
+
+                    async function loadData() {
+                    const res = await fetch('/data');
+                    const data = await res.json();
+                    dataList.innerHTML = '';
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.nombre} - ${item.apellido} - ${item.email} - ${item.mensaje}`;
+                        dataList.appendChild(li);
+                    });
+                    }
+
+                    loadData();
+                </script>
+
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+</body>
+</html>
